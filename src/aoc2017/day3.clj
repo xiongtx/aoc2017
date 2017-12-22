@@ -146,23 +146,17 @@
         :when (not (and (= i x) (= j y)))]
     [i j]))
 
-(defn next-spiral
-  "Given a spiral sum sequence xs, generate sequence with next value."
-  ([]
-   (next-spiral [1]))
-  ([xs]
-   (let [next-x (->> (count xs)
-                     index->coordinates
-                     neighbors
-                     (map coordinates->index)
-                     (map #(nth xs % 0))
-                     (apply +))]
-     (concat xs [next-x]))))
-
 (defn sum-larger-than
   "Return the first spiral sum larger than n."
-  [n]
-  (->> (iterate next-spiral [1])
-       (map last)
-       (drop-while #(< % n))
-       first))
+  [k]
+  (loop [spiral [1]]
+    (let [v (peek spiral)]
+      (if (> v k)
+        v
+        (let [nv (->> (count spiral)
+                      index->coordinates
+                      neighbors
+                      (map coordinates->index)
+                      (map #(nth spiral % 0))
+                      (apply +))]
+          (recur (conj spiral nv)))))))
